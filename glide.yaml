@@ -1,0 +1,14 @@
+package: github.com/mariaefi29/md5_calculator
+import:
+- package: github.com/globalsign/mgo
+  subpackages:
+  - bson
+- package: github.com/julienschmidt/httprouter
+  version: v1.2.0
+  subpackages:
+  - config
+- package: github.com/pkg/errors
+  version: v0.8.1
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson

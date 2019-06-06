@@ -1,0 +1,22 @@
+hash: cab63b76261670bed811f9c24149bdba4c60418f023c2e3f23e17c7762d436e7
+updated: 2019-06-06T17:27:12.250416+03:00
+imports:
+- name: github.com/globalsign/mgo
+  version: eeefdecb41b842af6dc652aaea4026e8403e62df
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
+- name: github.com/julienschmidt/httprouter
+  version: 348b672cd90d8190f8240323e372ecd1e66b59dc
+  subpackages:
+  - config
+- name: github.com/pkg/errors
+  version: ba968bfe8b2f7e042a574c888954fccecfa385b4
+- name: gopkg.in/mgo.v2
+  version: 9856a29383ce1c59f308dd1cf0363a79b5bef6b5
+  subpackages:
+  - bson
+  - internal/json
+testImports: []
