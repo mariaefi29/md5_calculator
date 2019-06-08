@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/globalsign/mgo/bson"
 	"github.com/mariaefi29/md5_calculator/config"
 	"github.com/pkg/errors"
@@ -8,11 +10,12 @@ import (
 
 //Task Struct
 type Task struct {
-	ID     bson.ObjectId `json:"id" bson:"_id"`
-	IDstr  string        `json:"idstr" bson:"idstr"`
-	Status string        `json:"status" bson:"status"`
-	MD5    string        `json:"md5" bson:"md5,omitempty"`
-	URL    string        `json:"url" bson:"url,omitempty"`
+	ID        bson.ObjectId `json:"id" bson:"_id"`
+	IDstr     string        `json:"idstr" bson:"idstr"`
+	Status    string        `json:"status" bson:"status"`
+	MD5       string        `json:"md5" bson:"md5,omitempty"`
+	URL       string        `json:"url" bson:"url,omitempty"`
+	CreatedAt time.Time     `json:"time" bson:"time"`
 }
 
 //CreateTask creates a task in a database for calculation a md5 hash code of a file
@@ -30,6 +33,7 @@ func CreateTask(url string) (Task, error) {
 	task.IDstr = task.ID.Hex()
 	task.URL = url
 	task.Status = "running"
+	task.CreatedAt = time.Now()
 
 	//creates a corresponding document in a mongo database
 	err4 := config.Tasks.Insert(task)
@@ -70,6 +74,20 @@ func FailedTask(task Task) error {
 	err := config.Tasks.Update(bson.M{"_id": task.ID}, &task)
 	if err != nil {
 		return errors.Wrap(err, "Database error: failed to update a task")
+	}
+	return nil
+}
+
+//DeleteTask deletes a required task
+func DeleteTask(task Task) error {
+
+	currentSession := config.Session.Copy()
+	defer currentSession.Close()
+
+	err := config.Tasks.Remove(bson.M{"_id": task.ID})
+
+	if err != nil {
+		return errors.Wrap(err, "Database error: failed to delete a task")
 	}
 	return nil
 }

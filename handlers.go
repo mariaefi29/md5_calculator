@@ -35,7 +35,8 @@ func submit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	//Writes an task's id.
-	fmt.Println("id:", task.IDstr)
+	// fmt.Println("id:", task.IDstr)
+	fmt.Fprintln(w, "{\"id\":"+"\""+task.IDstr+"\"}")
 
 	//Starts a goroutine that retrives data from the file and calculate a md5 hash code.
 	go calculateMD5(url, task)
@@ -43,13 +44,15 @@ func submit(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	return
 }
 
-func calculateMD5(url string, task models.Task) ([]byte, error) {
+func calculateMD5(url string, task models.Task) (string, error) {
+
+	md5Code := ""
 
 	//Send a GET request to the corresponding URL
 	resp, err := http.Get(url)
 	if err != nil {
 		models.FailedTask(task)
-		return nil, errors.Wrap(err, "Failed to access file through the URL")
+		return md5Code, errors.Wrap(err, "Failed to access file through the URL")
 	}
 	defer resp.Body.Close()
 
@@ -59,23 +62,23 @@ func calculateMD5(url string, task models.Task) ([]byte, error) {
 	if _, err := io.Copy(h, resp.Body); err != nil {
 		models.FailedTask(task)
 		log.Println(errors.Wrap(err, "Failed to copy data from the response"))
-		return nil, errors.Wrap(err, "Failed to copy data from the response")
+		return md5Code, errors.Wrap(err, "Failed to copy data from the response")
 	}
 
-	md5 := hex.EncodeToString(h.Sum(nil))
+	md5Code = hex.EncodeToString(h.Sum(nil))
 
 	//Update hash code and a task's status
-	task.MD5 = md5
+	task.MD5 = md5Code
 	task.Status = "done"
 
 	//Update data in the database
-	err2 := config.Tasks.Update(bson.M{"_id": task.ID}, &task)
-	if err2 != nil {
-		log.Println(errors.Wrap(err2, "Failed to update data in a database"))
-		return h.Sum(nil), errors.Wrap(err2, "Failed to update data in a database")
+
+	if err := config.Tasks.Update(bson.M{"_id": task.ID}, &task); err != nil {
+		log.Println(errors.Wrap(err, "Failed to update data in a database"))
+		return md5Code, errors.Wrap(err, "Failed to update data in a database")
 	}
 
-	return h.Sum(nil), nil
+	return md5Code, nil
 }
 
 // GET request /check with id parameter. The check handler responds woth a task id
@@ -85,7 +88,7 @@ func check(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	//Obtain the id from the URL using the request parameters
 	id := ps.ByName("id")
 	if id == "" {
-		http.Error(w, http.StatusText(400), http.StatusBadGateway)
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		error := errors.New("Failed to parse url and find a task id")
 		log.Println(error)
 		return
@@ -100,8 +103,8 @@ func check(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	//Print out all the data to the user. If the task is still running or was failed, prints out the data parcially.
 	if task.Status == "done" {
-		fmt.Println("id:", task.ID, ",", "status:", task.Status, ",", "md5:", task.MD5)
+		fmt.Fprintf(w, "{\"id\":\"%s\", \"status\":\"%s\", \"md5\":\"%s\", \"url\":\"%s\"}\n", task.IDstr, task.Status, task.MD5, task.URL)
 	} else {
-		fmt.Println("id:", task.ID, ",", "status:", task.Status)
+		fmt.Fprintf(w, "{\"id\":\"%s\", \"status\":\"%s\"}\n", task.IDstr, task.Status)
 	}
 }
