@@ -22,7 +22,7 @@ This application accepts two requests:
 
 ```$ curl -X GET http://localhost:8000/check/5cfbb4561b699b0e9a633fe3```    
 
-{"id":"5cfbb4561b699b0e9a633fe3", "status":"done"}  
+{"id":"5cfbb4561b699b0e9a633fe3", "status":"running"}  
 
 ```$ curl -X GET http://localhost:8000/check/5cfbb4561b699b0e9a633fe3```    
 
