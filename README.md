@@ -16,7 +16,7 @@ This application accepts two requests:
 4. Start "playing" with the application.
 
 ## How to use:
-```$ curl -X POST -d "url=http://site.com/file.txt" http://localhost:8000/submit```
+```$ curl -X POST -d "url=http://site.com/file.txt" http://localhost:8000/submit``` 
 {"id":"5cfbb4561b699b0e9a633fe3"}   
 ```$ curl -X GET http://localhost:8000/check/5cfbb4561b699b0e9a633fe3```    
 {"id":"5cfbb4561b699b0e9a633fe3", "status":"done"}  
