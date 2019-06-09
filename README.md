@@ -16,14 +16,14 @@ This application accepts two requests:
 4. Start "playing" with the application.
 
 ## How to use:
-```$ curl -X POST -d "url=http://site.com/file.txt" http://localhost:8000/submit```
+```$ curl -X POST -d "url=http://site.com/file.txt" http://localhost:8080/submit```
 
 {"id":"5cfbb4561b699b0e9a633fe3"}   
 
-```$ curl -X GET http://localhost:8000/check/5cfbb4561b699b0e9a633fe3```    
+```$ curl -X GET http://localhost:8080/check/5cfbb4561b699b0e9a633fe3```    
 
 {"id":"5cfbb4561b699b0e9a633fe3", "status":"running"}  
 
-```$ curl -X GET http://localhost:8000/check/5cfbb4561b699b0e9a633fe3```    
+```$ curl -X GET http://localhost:8080/check/5cfbb4561b699b0e9a633fe3```    
 
 {"id":"5cfbb4561b699b0e9a633fe3", "status":"done", "md5":"74454cfc8f400c7d32a70d1f1eda6ce8", "url":"http://site.com/file.txt"}  
